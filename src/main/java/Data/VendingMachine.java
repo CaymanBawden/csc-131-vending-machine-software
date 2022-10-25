@@ -5,6 +5,9 @@ import java.util.ArrayList;
 public class VendingMachine {
     public int id;
     public String location;
+    public String[][][] inventory = new String[15][15][8];
+    public String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
 
     // TODO: generate a 3 dimensional array (1st array is row, 2nd array is col, and 3rd array is slot) for now 2 rows, 1 col, 4 slots
     // TODO: have a list of all items that should be removed from the vending machine
