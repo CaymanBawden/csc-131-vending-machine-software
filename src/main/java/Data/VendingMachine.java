@@ -7,6 +7,9 @@ public class VendingMachine {
     public String location;
     public String[][][] inventory = new String[15][15][8];
     public String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    public String[] tmp1 = new String[1800];
+    public String[] tmp2 = new String[3];
+    public int inventoryCounter = 0;
 
 
     // TODO: generate a 3 dimensional array (1st array is row, 2nd array is col, and 3rd array is slot) for now 2 rows, 1 col, 4 slots
