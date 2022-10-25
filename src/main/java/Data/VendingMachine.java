@@ -21,6 +21,40 @@ public class VendingMachine {
         String[] splitData = data.split(",");
         id = Integer.parseInt(splitData[0]);
         location = splitData[1];
+
+        // this is the inventory string
+        tmp1 = splitData[2].split(";");
+
+        // TODO: loop through inventory string and populate inventory
+        for (int i = 0; i < inventory.length; i++){
+            for (int j = 0; j < inventory[i].length; j++){
+                for (int k = 0; k < inventory[i][j].length; k++){
+                    tmp1 = splitData[2].split(";");
+                    if (tmp1.length > inventoryCounter){
+                        tmp2 = tmp1[inventoryCounter].split(":");
+                        inventory[i][j][k] = tmp2[1] + ":" + tmp2[2];
+                        inventoryCounter++;
+                    }
+                }
+            }
+        }
+        printInventory();
+        // this is how we access columns by a character
+        // alphabet.indexOf(character)
+
+    }
+
+    // for debugging purposes only
+    public void printInventory() {
+        for (int i = 0; i < inventory.length - 2; i++) {
+            for (int j = 0; j < inventory[i].length - 2; j++) {
+                for (int k = 0; k < inventory[i][j].length - 2; k++) {
+                    String item = inventory[i][j][k];
+                    if (item != null)
+                        System.out.println(item);
+                }
+            }
+        }
     }
 
     // TODO: make all fields reduce to one string to write to file
