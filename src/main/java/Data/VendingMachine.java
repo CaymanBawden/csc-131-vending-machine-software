@@ -62,14 +62,12 @@ public class VendingMachine {
 
     // for debugging purposes only
     public void printInventory() {
-        for (int i = 0; i < inventory.length - 2; i++) {
-            for (int j = 0; j < inventory[i].length - 2; j++) {
-                for (int k = 0; k < inventory[i][j].length - 2; k++) {
+        for (int i = 0; i < inventory.length; i++) {
+            for (int j = 0; j < inventory[i].length; j++) {
+                for (int k = 0; k < inventory[i][j].length; k++) {
                     String[] item = inventory[i][j][k];
                     if (item != null)
                         System.out.println(String.format("Row: %s, Col: %s, Slot: %s ", i + 1, alphabet.charAt(j), k + 1) + Arrays.toString(item));
-                    else
-                        System.out.println("N/A");
                 }
             }
         }
