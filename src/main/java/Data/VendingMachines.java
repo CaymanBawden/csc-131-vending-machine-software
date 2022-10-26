@@ -1,7 +1,6 @@
 package Data;
 
 import utils.FileRead;
-
 import java.util.ArrayList;
 
 public class VendingMachines {
@@ -19,18 +18,15 @@ public class VendingMachines {
 
         for (String line : lines)
             vendingMachines.add(new VendingMachine(line));
-
-        for (VendingMachine machine : vendingMachines)
-            System.out.println(machine.location);
     }
 
     // TODO: return item if it matches a specific id
-    public VendingMachine getItemById(int id) {
+    public VendingMachine getVendingMachineById(int id) {
         return new VendingMachine("1,bar,baz");
     }
 
     // TODO: return item(s) if it matches a specific location
-    public ArrayList<VendingMachine> getItemsByLocation(Location location) {
+    public ArrayList<VendingMachine> getVendingMachinesByLocation(Location location) {
        return new ArrayList<>();
     }
 }
