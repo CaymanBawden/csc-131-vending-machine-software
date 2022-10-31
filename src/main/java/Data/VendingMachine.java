@@ -1,57 +1,73 @@
 package Data;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 
 public class VendingMachine {
     public int id;
     public String location;
-    public String[][][] inventory = new String[15][15][8];
+    public static final int rows = 15;
+    public static final int cols = 15;
+    public static final int slots = 8;
+    public String[][][][] inventory = new String[rows][cols][slots][];
     public String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    public String[] tmp1 = new String[1800];
-    public String[] tmp2 = new String[3];
-    public int inventoryCounter = 0;
+    public Boolean online = false;
 
 
-    // TODO: generate a 3 dimensional array (1st array is row, 2nd array is col, and 3rd array is slot) for now 2 rows, 1 col, 4 slots
     // TODO: have a list of all items that should be removed from the vending machine
     // TODO: find a way to store the current date
     // TODO: vending machine should store a boolean of whether it is online or not
 
     public VendingMachine(String data) {
+        online = true;
         String[] splitData = data.split(",");
         id = Integer.parseInt(splitData[0]);
         location = splitData[1];
+        String[] inventoryStrings = splitData[2].split(";");
+        String[] pricesString = splitData[3].split(";");
+        HashMap<String, String> prices = new HashMap<String, String>();
 
-        // this is the inventory string
-        tmp1 = splitData[2].split(";");
-
-        // TODO: loop through inventory string and populate inventory
-        for (int i = 0; i < inventory.length; i++){
-            for (int j = 0; j < inventory[i].length; j++){
-                for (int k = 0; k < inventory[i][j].length; k++){
-                    tmp1 = splitData[2].split(";");
-                    if (tmp1.length > inventoryCounter){
-                        tmp2 = tmp1[inventoryCounter].split(":");
-                        inventory[i][j][k] = tmp2[1] + ":" + tmp2[2];
-                        inventoryCounter++;
-                    }
-                }
-            }
+        for (String price : pricesString) {
+            String[] priceData = price.split(":");
+            prices.put(priceData[0], priceData[1]);
         }
-        printInventory();
-        // this is how we access columns by a character
-        // alphabet.indexOf(character)
 
+        for (String itemString : inventoryStrings) {
+            // split string into array for access
+            String[] items = itemString.split(":");
+            String[] inventoryIndex = items[0].split("");
+
+            // convert alphabet character to index
+            inventoryIndex[1] = Integer.toString(alphabet.indexOf(inventoryIndex[1]));
+            String rowCol = items[0].substring(0, 2);
+            String name = items[1];
+            String date = items[2];
+
+            int row = Integer.parseInt(inventoryIndex[0]) - 1;
+            int col = Integer.parseInt(inventoryIndex[1]);
+            int slot = Integer.parseInt(inventoryIndex[2]) - 1;
+
+            // populate the item with data
+            String[] item = new String[3];
+            item[0] = name;
+            item[1] = date;
+            item[2] = prices.get(rowCol);
+
+            inventory[row][col][slot] = item;
+        }
+
+         printInventory();
     }
 
     // for debugging purposes only
     public void printInventory() {
-        for (int i = 0; i < inventory.length - 2; i++) {
-            for (int j = 0; j < inventory[i].length - 2; j++) {
-                for (int k = 0; k < inventory[i][j].length - 2; k++) {
-                    String item = inventory[i][j][k];
+        for (int i = 0; i < inventory.length; i++) {
+            for (int j = 0; j < inventory[i].length; j++) {
+                for (int k = 0; k < inventory[i][j].length; k++) {
+                    String[] item = inventory[i][j][k];
                     if (item != null)
-                        System.out.println(item);
+                        System.out.println(String.format("Row: %s, Col: %s, Slot: %s ", i + 1, alphabet.charAt(j), k + 1) + Arrays.toString(item));
                 }
             }
         }
