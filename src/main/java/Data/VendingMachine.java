@@ -129,7 +129,7 @@ public class VendingMachine {
         return !hasItem;
     }
 
-    //
+    //Updates the file with the changes made to the inventory
     public void refreshData(){
         ArrayList<String> lines = new ArrayList<>();
         FileRead fr = new FileRead(filepath);
