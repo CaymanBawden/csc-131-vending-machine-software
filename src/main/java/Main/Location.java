@@ -1,4 +1,4 @@
-package Data;
+package Main;
 
 public class Location {
     String location;
