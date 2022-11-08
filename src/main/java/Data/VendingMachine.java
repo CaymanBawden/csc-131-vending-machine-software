@@ -1,11 +1,15 @@
 package Data;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import utils.FileRead;
 import utils.FileWrite;
+import java.util.Date;
+import java.util.Calendar;
+import java.text.DateFormat;
 
 public class VendingMachine {
     public int id;
@@ -168,6 +172,36 @@ public class VendingMachine {
     // TODO: make all fields reduce to one string to write to file
     public String toString() {
         return "vending-machine-string";
+    }
+
+    public void checkExpirations() {
+        Date date = Calendar.getInstance().getTime();
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/mm/dd");
+        String[] strDate = dateFormat.format(date).split("/");
+        for (int i = 0; i < inventory.length; i++) {
+            for (int j = 0; j < inventory[i].length; j++) {
+                for (int k = 0; k < inventory[i][j].length; k++) {
+                    String[] item = inventory[i][j][k];
+                    if (item != null){
+                        String[] expiration = item[1].split("/");
+                        System.out.println("");
+                        if(Integer.parseInt(strDate[0]) > Integer.parseInt(expiration[0])){
+                            System.out.println(String.format("Item is now expired: %s in slot %s%s%s", item[0], i + 1, alphabet.charAt(j), k + 1));
+                        }else if(Integer.parseInt(strDate[0]) == Integer.parseInt(expiration[0])){
+                            if(Integer.parseInt(strDate[1]) > Integer.parseInt(expiration[1])){
+                                System.out.println(String.format("Item is now expired: %s in slot %s%s%s", item[0], i + 1, alphabet.charAt(j), k + 1));
+                            }else if(Integer.parseInt(strDate[1]) == Integer.parseInt(expiration[1])){
+                                if(Integer.parseInt(strDate[2]) > Integer.parseInt(expiration[2])){
+                                    System.out.println(String.format("Item is now expired: %s in slot %s%s%s", item[0], i + 1, alphabet.charAt(j), k + 1));
+                                }else if(Integer.parseInt(strDate[2]) == Integer.parseInt(expiration[2])){
+                                    System.out.println(String.format("Item is about to expire: %s in slot %s%s%s", item[0], i+1, alphabet.charAt(j), k+1));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     // TODO: return all items that are expired or marked as removed

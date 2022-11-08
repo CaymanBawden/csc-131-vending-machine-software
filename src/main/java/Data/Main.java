@@ -6,5 +6,6 @@ public class Main {
         vendingMachineData.getVendingMachineById(1).printInventory();
         System.out.println("");
         vendingMachineData.getVendingMachineById(2).printInventory();
+        vendingMachineData.getVendingMachineById(1).checkExpirations();
     }
 }
