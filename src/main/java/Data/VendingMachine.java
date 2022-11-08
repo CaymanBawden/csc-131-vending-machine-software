@@ -75,8 +75,10 @@ public class VendingMachine {
             for (int j = 0; j < inventory[i].length; j++) {
                 for (int k = 0; k < inventory[i][j].length; k++) {
                     String[] item = inventory[i][j][k];
-                    if (item != null)
+                    if (item != null) {
                         System.out.println(String.format("Row: %s, Col: %s, Slot: %s ", i + 1, alphabet.charAt(j), k + 1) + Arrays.toString(item));
+                    }else
+                        break;
                 }
             }
         }
@@ -156,7 +158,8 @@ public class VendingMachine {
                     if (item != null) {
                         String partOfInventory =String.format("%s%s%s:%s:%s;", i + 1, alphabet.charAt(j), k+1, item[0], item[1]);
                         totalInventory = totalInventory + partOfInventory;
-                    }
+                    }else
+                        break;
                 }
             }
         }
@@ -170,10 +173,11 @@ public class VendingMachine {
     }
 
     // TODO: make all fields reduce to one string to write to file
-    public String toString() {
+    public String toString(){
         return "vending-machine-string";
     }
 
+    // Lists all expired items for the restocker
     public void checkExpirations() {
         Date date = Calendar.getInstance().getTime();
         DateFormat dateFormat = new SimpleDateFormat("yyyy/mm/dd");
@@ -198,7 +202,8 @@ public class VendingMachine {
                                 }
                             }
                         }
-                    }
+                    }else
+                       break;
                 }
             }
         }
