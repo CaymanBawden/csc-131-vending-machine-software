@@ -188,7 +188,6 @@ public class VendingMachine {
                     String[] item = inventory[i][j][k];
                     if (item != null){
                         String[] expiration = item[1].split("/");
-                        System.out.println("");
                         if(Integer.parseInt(strDate[0]) > Integer.parseInt(expiration[0])){
                             System.out.println(String.format("Item is now expired: %s in slot %s%s%s", item[0], i + 1, alphabet.charAt(j), k + 1));
                         }else if(Integer.parseInt(strDate[0]) == Integer.parseInt(expiration[0])){
