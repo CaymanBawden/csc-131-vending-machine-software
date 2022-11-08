@@ -17,12 +17,16 @@ public class VendingMachines {
             lines.add(fr.getLine(i).trim());
 
         for (String line : lines)
-            vendingMachines.add(new VendingMachine(line));
+            vendingMachines.add(new VendingMachine(line, filepath));
     }
 
     // TODO: return item if it matches a specific id
     public VendingMachine getVendingMachineById(int id) {
-        return new VendingMachine("1,bar,baz");
+        for(int i = 0; i < vendingMachines.size(); i ++){
+            if(vendingMachines.get(i).id == id)
+                return vendingMachines.get(i);
+        }
+        return null;
     }
 
     // TODO: return item(s) if it matches a specific location

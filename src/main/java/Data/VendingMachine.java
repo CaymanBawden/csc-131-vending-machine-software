@@ -1,8 +1,11 @@
 package Data;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import utils.FileRead;
+import utils.FileWrite;
 
 public class VendingMachine {
     public int id;
@@ -11,21 +14,25 @@ public class VendingMachine {
     public static final int cols = 15;
     public static final int slots = 8;
     public String[][][][] inventory = new String[rows][cols][slots][];
+    public static String pricesData;
     public String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     public Boolean online = false;
+    public static String filepath;
 
 
     // TODO: have a list of all items that should be removed from the vending machine
     // TODO: find a way to store the current date
     // TODO: vending machine should store a boolean of whether it is online or not
 
-    public VendingMachine(String data) {
+    public VendingMachine(String data, String path) {
         online = true;
+        filepath = path;
         String[] splitData = data.split(",");
         id = Integer.parseInt(splitData[0]);
         location = splitData[1];
         String[] inventoryStrings = splitData[2].split(";");
         String[] pricesString = splitData[3].split(";");
+        pricesData = splitData[3];
         HashMap<String, String> prices = new HashMap<String, String>();
 
         for (String price : pricesString) {
@@ -56,8 +63,6 @@ public class VendingMachine {
 
             inventory[row][col][slot] = item;
         }
-
-         printInventory();
     }
 
     // for debugging purposes only
@@ -71,6 +76,93 @@ public class VendingMachine {
                 }
             }
         }
+    }
+
+    //Used to add items to first available slot in the inventory array
+    public boolean addItem(String[] item, int[] index){
+        boolean hasSpace = false;
+        if(inventory[index[0]][index[1]][7] != null){
+            System.out.println("Too many items in slot");
+            return hasSpace;
+        }
+        int i;
+        for(i = 0; i < 8; i ++){
+            if(inventory[index[0]][index[1]][i] == null)
+                break;
+        }
+        inventory[index[0]][index[1]][i] = item;
+        refreshData();
+        return !hasSpace;
+    }
+
+    //Removes the front item from the inventory array, intended for customers
+    public boolean removeFrontItem(int[] index){
+        boolean hasItem = false;
+        if(inventory[index[0]][index[1]][0] == null)
+            return hasItem;
+        String[][][][] tmpinv = inventory;
+        for(int i = 0; i < 8; i ++){
+            if(i < 7){
+                tmpinv[index[0]][index[1]][i] = tmpinv[index[0]][index[1]][i + 1];
+            }else if(i == 7)
+                tmpinv[index[0]][index[1]][i] = null;
+        }
+        inventory = tmpinv;
+        refreshData();
+        return !hasItem;
+    }
+
+    //Removes items at specific index from the inventory array, intended for restockers
+    public boolean removeSpecificItem(int[] index){
+        boolean hasItem = false;
+        if(inventory[index[0]][index[1]][0] == null || inventory[index[0]][index[1]][index[2]] == null)
+            return hasItem;
+        String[][][][] tmpinv = inventory;
+        for(int i = index[2]; i < 8; i ++){
+            if(i < 7) {
+                tmpinv[index[0]][index[1]][i] = tmpinv[index[0]][index[1]][i + 1];
+            }else if(i == 7)
+                tmpinv[index[0]][index[1]][i] = null;
+        }
+        inventory = tmpinv;
+        refreshData();
+        return !hasItem;
+    }
+
+    //
+    public void refreshData(){
+        ArrayList<String> lines = new ArrayList<>();
+        FileRead fr = new FileRead(filepath);
+        FileWrite fw = new FileWrite(filepath);
+        int fileIndex = 0;
+        int numLines = fr.getNumLines();
+        lines.add(fr.getLine(0));
+        for(int i = 1; i < numLines; i++) {
+            lines.add(fr.getLine(i).trim());
+            String[] data = lines.get(i).split(",");
+            if (Integer.parseInt(data[0]) == id){
+                fileIndex = i;
+            }
+        }
+        String totalInventory = "";
+        for (int i = 0; i < inventory.length; i++) {
+            for (int j = 0; j < inventory[i].length; j++) {
+                for (int k = 0; k < inventory[i][j].length; k++) {
+                    String[] item = inventory[i][j][k];
+                    if (item != null) {
+                        String partOfInventory =String.format("%s%s%s:%s:%s;", i + 1, alphabet.charAt(j), k+1, item[0], item[1]);
+                        totalInventory = totalInventory + partOfInventory;
+                    }
+                }
+            }
+        }
+        totalInventory = totalInventory.substring(0, totalInventory.length() - 1);
+        lines.remove(fileIndex);
+        lines.add(fileIndex, String.format("%s,%s,%s,%s", id, location, totalInventory, pricesData));
+        for(int i = 0; i < lines.size(); i++){
+            fw.writeLine(lines.get(i));
+        }
+        fw.saveFile();
     }
 
     // TODO: make all fields reduce to one string to write to file
