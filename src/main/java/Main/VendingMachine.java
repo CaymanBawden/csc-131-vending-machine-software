@@ -22,10 +22,8 @@ public class VendingMachine {
     public Boolean online = false;
     public static String filepath;
 
-
     // TODO: have a list of all items that should be removed from the vending machine
-    // TODO: find a way to store the current date
-    // TODO: vending machine should store a boolean of whether it is online or not
+    // TODO: make all fields reduce to one string to write to file
 
     public VendingMachine(String data, String path) {
         online = true;
@@ -76,65 +74,64 @@ public class VendingMachine {
                     String[] item = inventory[i][j][k];
                     if (item != null) {
                         System.out.println(String.format("Row: %s, Col: %s, Slot: %s ", i + 1, alphabet.charAt(j), k + 1) + Arrays.toString(item));
-                    }else
-                        break;
+                    }
                 }
             }
         }
     }
 
     //Used to add items to first available slot in the inventory array
-    public boolean addItem(String[] item, int[] index){
-        boolean hasSpace = false;
-        if(inventory[index[0]][index[1]][7] != null){
-            System.out.println("Too many items in slot");
-            return hasSpace;
+    public boolean addItem(String[] item, int row, char colChar){
+        int col = alphabet.indexOf(colChar);
+        String[] lastItem = inventory[row][col][slots - 1];
+
+        if(lastItem != null){
+            throw new RuntimeException(String.format("Not enough space for item in row %s and col %s", row, col));
         }
-        int i;
-        for(i = 0; i < 8; i ++){
-            if(inventory[index[0]][index[1]][i] == null)
+
+        for(int slot = 0; slot < slots + 1; slot ++){
+            if(inventory[row][col][slot] == null) {
+                inventory[row][col][slot] = item;
                 break;
+            }
         }
-        inventory[index[0]][index[1]][i] = item;
-        refreshData();
-        return !hasSpace;
+
+        return true;
     }
 
-    //Removes the front item from the inventory array, intended for customers
-    public boolean removeFrontItem(int[] index){
-        boolean hasItem = false;
-        if(inventory[index[0]][index[1]][0] == null)
-            return hasItem;
-        String[][][][] tmpinv = inventory;
-        for(int i = 0; i < 8; i ++){
-            if(i < 7){
-                tmpinv[index[0]][index[1]][i] = tmpinv[index[0]][index[1]][i + 1];
-            }else if(i == 7)
-                tmpinv[index[0]][index[1]][i] = null;
-        }
-        inventory = tmpinv;
-        refreshData();
-        return !hasItem;
+    // Removes and returns an item in a row and column
+    public String[] removeFrontItem(int row, char colChar){
+        int col = alphabet.indexOf(colChar);
+        String[] item = inventory[row][col][0];
+        inventory[row][col][0] = null;
+        shiftItemsDown(row, col);
+        return item;
     }
 
     //Removes items at specific index from the inventory array, intended for restockers
-    public boolean removeSpecificItem(int[] index){
-        boolean hasItem = false;
-        if(inventory[index[0]][index[1]][0] == null || inventory[index[0]][index[1]][index[2]] == null)
-            return hasItem;
-        String[][][][] tmpinv = inventory;
-        for(int i = index[2]; i < 8; i ++){
-            if(i < 7) {
-                tmpinv[index[0]][index[1]][i] = tmpinv[index[0]][index[1]][i + 1];
-            }else if(i == 7)
-                tmpinv[index[0]][index[1]][i] = null;
+    public void removeSpecificItem(int row, char colChar, int slot) {
+        int col = alphabet.indexOf(colChar);
+        inventory[row][col][slot] = null;
+        shiftItemsDown(row, col);
+    }
+
+    //Shifts items down after change of inventory
+    private void shiftItemsDown(int row, int col){
+        int cursor = 1;
+        for(int i = 0; i < slots - 1; i++){
+            String [][] rowAndCol = inventory[row][col];
+
+            if (rowAndCol[i] == null) {
+                rowAndCol[i] = rowAndCol[cursor];
+                rowAndCol[cursor] = null;
+            }
+
+            cursor++;
         }
-        inventory = tmpinv;
-        refreshData();
-        return !hasItem;
     }
 
     //Updates the file with the changes made to the inventory
+    //Will be removed or changed
     public void refreshData(){
         ArrayList<String> lines = new ArrayList<>();
         FileRead fr = new FileRead(filepath);
@@ -171,44 +168,32 @@ public class VendingMachine {
         fw.saveFile();
     }
 
-    // TODO: make all fields reduce to one string to write to file
     public String toString(){
         return "vending-machine-string";
     }
 
-    // Lists all expired items for the restocker
-    public void checkExpirations() {
+    // Lists all expired items
+    public ArrayList<String[]> checkExpirations() {
+        ArrayList<String[]> expiredItems = new ArrayList<>();
         Date date = Calendar.getInstance().getTime();
         DateFormat dateFormat = new SimpleDateFormat("yyyy/mm/dd");
-        String[] strDate = dateFormat.format(date).split("/");
-        for (int i = 0; i < inventory.length; i++) {
-            for (int j = 0; j < inventory[i].length; j++) {
-                for (int k = 0; k < inventory[i][j].length; k++) {
-                    String[] item = inventory[i][j][k];
-                    if (item != null){
-                        String[] expiration = item[1].split("/");
-                        if(Integer.parseInt(strDate[0]) > Integer.parseInt(expiration[0])){
-                            System.out.println(String.format("Item is now expired: %s in slot %s%s%s", item[0], i + 1, alphabet.charAt(j), k + 1));
-                        }else if(Integer.parseInt(strDate[0]) == Integer.parseInt(expiration[0])){
-                            if(Integer.parseInt(strDate[1]) > Integer.parseInt(expiration[1])){
-                                System.out.println(String.format("Item is now expired: %s in slot %s%s%s", item[0], i + 1, alphabet.charAt(j), k + 1));
-                            }else if(Integer.parseInt(strDate[1]) == Integer.parseInt(expiration[1])){
-                                if(Integer.parseInt(strDate[2]) > Integer.parseInt(expiration[2])){
-                                    System.out.println(String.format("Item is now expired: %s in slot %s%s%s", item[0], i + 1, alphabet.charAt(j), k + 1));
-                                }else if(Integer.parseInt(strDate[2]) == Integer.parseInt(expiration[2])){
-                                    System.out.println(String.format("Item is about to expire: %s in slot %s%s%s", item[0], i+1, alphabet.charAt(j), k+1));
-                                }
-                            }
-                        }
-                    }else
-                       break;
+        int currentDate = Integer.parseInt(dateFormat.format(date).replace("/", ""));
+
+        for (int row = 0; row < inventory.length; row++) {
+            for (int col = 0; col < inventory[row].length; col++) {
+                for (int slot = 0; slot < inventory[row][col].length; slot++) {
+                    String[] item = inventory[row][col][slot];
+
+                    if (item == null)
+                        break;
+
+                    int itemExpiration = Integer.parseInt(item[1].replace("/", ""));
+                    if (itemExpiration < currentDate)
+                        expiredItems.add(item);
                 }
             }
         }
-    }
 
-    // TODO: return all items that are expired or marked as removed
-    // TODO: return and remove item in specific row, col (e.g 1A)
-    // TODO: add item in specific row, col, and slot (only for restockers)
-    // NOTE: we need authentication at some level
+        return expiredItems;
+    }
 }
