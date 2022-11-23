@@ -13,12 +13,12 @@ import java.text.DateFormat;
 public class VendingMachine {
     public int id;
     public String location;
-    public static final int rows = 15;
-    public static final int cols = 15;
-    public static final int slots = 8;
+    public static final int rows = 8;
+    public static final int cols = 5;
+    public static final int slots = 15;
     public String[][][][] inventory = new String[rows][cols][slots][];
     public static String pricesData;
-    public String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    public String alphabet = "ABCDE";
     public Boolean online = false;
     public static String filepath;
 
@@ -67,12 +67,29 @@ public class VendingMachine {
     }
 
     // for debugging purposes only
+    public void printInventory(int limit) {
+        int l = 0;
+        for (int i = 0; i < inventory.length; i++) {
+            for (int j = 0; j < inventory[i].length; j++) {
+                for (int k = 0; k < inventory[i][j].length; k++) {
+                    String[] item = inventory[i][j][k];
+                    if (item != null && l < limit) {
+                        l += 1;
+                        System.out.println(String.format("Row: %s, Col: %s, Slot: %s ", i + 1, alphabet.charAt(j), k + 1) + Arrays.toString(item));
+                    }
+                }
+            }
+        }
+    }
+
     public void printInventory() {
+        int l = 0;
         for (int i = 0; i < inventory.length; i++) {
             for (int j = 0; j < inventory[i].length; j++) {
                 for (int k = 0; k < inventory[i][j].length; k++) {
                     String[] item = inventory[i][j][k];
                     if (item != null) {
+                        l += 1;
                         System.out.println(String.format("Row: %s, Col: %s, Slot: %s ", i + 1, alphabet.charAt(j), k + 1) + Arrays.toString(item));
                     }
                 }
@@ -102,17 +119,10 @@ public class VendingMachine {
     // Removes and returns an item in a row and column
     public String[] removeFrontItem(int row, char colChar){
         int col = alphabet.indexOf(colChar);
-        String[] item = inventory[row][col][0];
+        String[] item = inventory[row-1][col][0];
         inventory[row][col][0] = null;
         shiftItemsDown(row, col);
         return item;
-    }
-
-    //Removes items at specific index from the inventory array, intended for restockers
-    public void removeSpecificItem(int row, char colChar, int slot) {
-        int col = alphabet.indexOf(colChar);
-        inventory[row][col][slot] = null;
-        shiftItemsDown(row, col);
     }
 
     //Shifts items down after change of inventory
@@ -176,7 +186,7 @@ public class VendingMachine {
     public ArrayList<String[]> checkExpirations() {
         ArrayList<String[]> expiredItems = new ArrayList<>();
         Date date = Calendar.getInstance().getTime();
-        DateFormat dateFormat = new SimpleDateFormat("yyyy/mm/dd");
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
         int currentDate = Integer.parseInt(dateFormat.format(date).replace("/", ""));
 
         for (int row = 0; row < inventory.length; row++) {
@@ -195,5 +205,22 @@ public class VendingMachine {
         }
 
         return expiredItems;
+    }
+
+    // Checks item queue and returns list of all items in it.
+    public ArrayList<String[]> checkQueuedItems(){
+        ArrayList<String[]> queuedItems = new ArrayList<>();
+        return queuedItems;
+    }
+
+
+    public void removeMultItems(int[][] items){
+        for(int i = 0; i < items.length; i++){
+            int[] item = items[i];
+            int row = item[0];
+            int col = item[1];
+            int slot = item[2];
+            inventory[row][col][slot] = null;
+        }
     }
 }
