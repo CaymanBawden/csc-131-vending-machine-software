@@ -72,7 +72,7 @@ public class Inventory {
                 for (int k = 0; k < inventory[i][j].length; k++) {
                     Item item = inventory[i][j][k];
                     if (item != null && l < limit) {
-                        item.print();
+                        System.out.printf("%s $%.2f\n", item, getPrice(i, j));
                         l += 1;
                     }
                 }

@@ -5,6 +5,7 @@ import InventoryManager.Item;
 import utils.Location;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class VendingMachine {
     public int id;
@@ -14,16 +15,14 @@ public class VendingMachine {
     public static final int slots = 15;
     public Inventory inventory = new Inventory(rows, cols, slots);
     public ArrayList<QueuedItem> queuedItems = new ArrayList<>();
+    public Item[] purchasedItems = new Item[100];
     public String alphabet = "ABCDE";
-    public Boolean online = false;
-    public static String filepath;
+    public Boolean online;
 
-    // TODO: have a list of all items that should be removed from the vending machine
     // TODO: make all fields reduce to one string to write to file
 
-    public VendingMachine(String data, String path) {
+    public VendingMachine(String data) {
         online = true;
-        filepath = path;
         String[] csvData = data.split(",");
         id = Integer.parseInt(csvData[0]);
         location = new Location(csvData[1]);
@@ -55,6 +54,7 @@ public class VendingMachine {
         }
     }
 
+    // all print functions are only for debugging
     public void print() {
         location.print();
     }
@@ -64,8 +64,42 @@ public class VendingMachine {
             item.print();
     }
 
-    public void addQueuedItem(Item item, String reason) {
-        queuedItems.add(new QueuedItem(item, reason));
+    public void addQueuedItem(QueuedItem queuedItem) {
+        queuedItems.add(queuedItem);
+    }
+
+    public void removeQueuedItem(QueuedItem queuedItem) {
+        queuedItems.remove(queuedItem);
+    }
+
+    public String purchaseItem(int row, int col, double price) {
+        Item removedItem = inventory.removeFrontItem(row, col);
+        if (removedItem == null)
+            return "Could not remove item";
+
+        String successMsg = "Check below for item";
+        double itemPrice = inventory.getPrice(row, col);
+
+        if (itemPrice < price)
+            successMsg = "Dispensing item below and change of: $" + (price - itemPrice);
+
+        if (itemPrice > price)
+            return "Please insert: $" + (itemPrice - price) + " more";
+
+        addPurchasedItem(removedItem);
+
+        return successMsg;
+    }
+
+    private void addPurchasedItem(Item item) {
+        item.setPurchasedDate();
+
+        purchasedItems[purchasedItems.length - 1] = null;
+        for (int i = purchasedItems.length - 2; i >= 0; i--) {
+            purchasedItems[i + 1] = purchasedItems[i];
+        }
+
+        purchasedItems[0] = item;
     }
 
     // Removes and returns an item in a row and column

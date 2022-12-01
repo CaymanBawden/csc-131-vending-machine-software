@@ -1,6 +1,5 @@
 package VendingMachine;
 
-import VendingMachine.VendingMachine;
 import utils.FileRead;
 
 import java.util.ArrayList;
@@ -20,10 +19,13 @@ public class VendingMachines {
             lines.add(fr.getLine(i).trim());
 
         for (String line : lines)
-            vendingMachines.add(new VendingMachine(line, filepath));
+            vendingMachines.add(new VendingMachine(line));
     }
 
-    // TODO: return item if it matches a specific id
+    public void saveData() {
+        System.out.println("Saving Data");
+    }
+
     public VendingMachine getVendingMachineById(int id) {
         for (int i = 0; i < vendingMachines.size(); i++) {
             if (vendingMachines.get(i).id == id)
@@ -32,7 +34,6 @@ public class VendingMachines {
         return null;
     }
 
-    // TODO: return item(s) if it matches a specific zip code
     public ArrayList<VendingMachine> getVendingMachinesByZipCode(int zipCode) {
         ArrayList<VendingMachine> zipCodeMachines = new ArrayList<>();
         for (VendingMachine machine : vendingMachines) {
