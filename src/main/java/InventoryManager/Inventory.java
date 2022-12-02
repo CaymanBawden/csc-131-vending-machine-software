@@ -134,7 +134,7 @@ public class Inventory {
     public String toString() {
         String itemName;
         double itemPrice;
-        String inventoryString = "";
+        String inventoryString = "Inventory:\n";
 
         for(int i=0; i<rows; i++){
             for(int j=0; j<cols; j++){

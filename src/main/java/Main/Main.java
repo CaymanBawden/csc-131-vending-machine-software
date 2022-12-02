@@ -13,8 +13,10 @@ public class Main {
 //        panel.show();
         VendingMachines machines = new VendingMachines("data/data.csv");
         VendingMachine currentVendingMachine = machines.getVendingMachineById(1);
-        String vendingString = currentVendingMachine.inventory.toString();
+        String vendingString = currentVendingMachine.toString();
         System.out.println(vendingString);
-        currentVendingMachine.inventory.getItem(5,4, 1).print();
+        currentVendingMachine.purchaseItem(3, 4, 1.00);
+        vendingString = currentVendingMachine.toString();
+        System.out.println(vendingString);
     }
 }

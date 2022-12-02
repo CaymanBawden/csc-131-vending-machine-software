@@ -104,7 +104,25 @@ public class VendingMachine {
 
     // Removes and returns an item in a row and column
     public String toString() {
-        return "vending-machine-string";
+        String vendingMachineString = String.format("%d, %s, %s, %s, %d\n", id, location.address, location.city, location.state, location.zipCode);
+        vendingMachineString = vendingMachineString + inventory.toString();
+
+        String queuedString = "Queued Items:\n";
+        for(QueuedItem item : queuedItems){
+            queuedString = queuedString + String.format("%d%s: %s. Reason: %s",item.row+1, alphabet.indexOf(item.col), item.name, item.reason);
+        }
+        vendingMachineString = vendingMachineString + queuedString;
+
+        String purchasedString = "Purchased Items:\n";
+        for(int i=0; i<purchasedItems.length; i++){
+            if(purchasedItems[i] == null)
+                break;
+            Item item = purchasedItems[i];
+            purchasedString = purchasedString + String.format("%d%s: %s. Purchase Date: %s",item.row+1, alphabet.charAt(item.col), item.name, item.purchasedDate);
+        }
+        vendingMachineString = vendingMachineString + purchasedString;
+
+        return vendingMachineString;
     }
 
 }
