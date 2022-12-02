@@ -132,7 +132,28 @@ public class Inventory {
     }
 
     public String toString() {
-        return "inventory";
+        String itemName;
+        double itemPrice;
+        String inventoryString = "";
+
+        for(int i=0; i<rows; i++){
+            for(int j=0; j<cols; j++){
+                int stock = 0;
+                for(int k = 0; k<slots && inventory[i][j][k] != null; k++)
+                    stock = stock + 1;
+                int itemRow = i + 1;
+                char itemCol = alphabet.charAt(j);
+                if(inventory[i][j][0] == null) {
+                    itemName ="No Item";
+                    itemPrice = 0.00;
+                }else {
+                    itemName = inventory[i][j][0].name;
+                    itemPrice = prices.get(i + "" + j);
+                }
+                inventoryString = inventoryString + String.format("%d%s: %s. Stock: %d. Price: %.2f\n", itemRow, itemCol, itemName, stock, itemPrice);
+            }
+        }
+        return inventoryString;
     }
 
     public ArrayList<Item> getExpiredItems() {

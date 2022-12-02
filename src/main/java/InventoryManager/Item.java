@@ -30,9 +30,7 @@ public class Item {
         this.slot = slot;
     }
 
-    public String toString() {
-        return String.format("%d %d %d: %s, %s", row, col, slot, name, prettyDate);
-    }
+    public String toString() {return String.format("%d %d %d: %s, %s", row, col, slot, name, prettyDate);}
 
     public void print() {
         System.out.printf(
