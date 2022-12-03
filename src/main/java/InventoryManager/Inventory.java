@@ -134,27 +134,35 @@ public class Inventory {
     }
 
     public String toString() {
-        String itemName;
-        double itemPrice;
-        String inventoryString = "Inventory:\n";
-
+        String inventoryString = "";
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                int stock = 0;
-                for (int k = 0; k < slots && inventory[i][j][k] != null; k++)
-                    stock = stock + 1;
-                int itemRow = i + 1;
-                char itemCol = alphabet.charAt(j);
-                if (inventory[i][j][0] == null) {
-                    itemName = "No Item";
-                    itemPrice = 0.00;
-                } else {
-                    itemName = inventory[i][j][0].name;
-                    itemPrice = prices.get(i + "" + j);
+                for(int k = 0; k <slots; k++){
+                    if(inventory[i][j][k] == null){
+                        break;
+                    }
+                    Item item = inventory[i][j][k];
+                    String rowColSlot = String.format("%d%s%d", item.row+1, alphabet.charAt(item.col), item.slot+1);
+                    if(inventoryString == "")
+                        inventoryString = inventoryString + String.format("%s:%s:%s", rowColSlot, item.name, item.prettyDate);
+                    else
+                        inventoryString = inventoryString + String.format(";%s:%s:%s", rowColSlot, item.name, item.prettyDate);
                 }
-                inventoryString = inventoryString + String.format("%d%s: %s. Stock: %d. Price: %.2f\n", itemRow, itemCol, itemName, stock, itemPrice);
             }
         }
+
+        String priceString = ",";
+        for(int priceRow = 0; priceRow < rows; priceRow++){
+            for(int priceCol = 0; priceCol < cols; priceCol++){
+                String rowCol = priceRow+1 + "" + alphabet.charAt(priceCol);
+                if(priceString == ",")
+                    priceString = priceString + String.format("%s:%.2f", rowCol, prices.get(priceRow + "" + priceCol));
+                else
+                    priceString = priceString + String.format(";%s:%.2f", rowCol, prices.get(priceRow + "" + priceCol));
+            }
+        }
+        inventoryString = inventoryString + priceString;
+
         return inventoryString;
     }
 

@@ -34,7 +34,7 @@ public class VendingMachines {
         return null;
     }
 
-    public ArrayList<VendingMachine> getVendingMachinesByZipCode(int zipCode) {
+    public ArrayList<VendingMachine> getVendingMachinesByZipCode(String zipCode) {
         ArrayList<VendingMachine> zipCodeMachines = new ArrayList<>();
         for (VendingMachine machine : vendingMachines) {
             if (machine.location.zipCode == zipCode)
