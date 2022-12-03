@@ -5,10 +5,8 @@ import VendingMachine.VendingMachine;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.util.Arrays;
 import javax.swing.*;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
+import javax.swing.table.DefaultTableModel;
 
 public class ManagerMainPanel {
     private JFrame mainFrame;
@@ -50,10 +48,10 @@ public class ManagerMainPanel {
             }
         });
 
-        machineTable = new JTable(tableData, columnNames);
+        machineTable = new JTable(new DefaultTableModel(tableData, columnNames));
+//        machineTable.setModel(new DefaultTableModel());
         tableData = null;
         machineTable.setDefaultEditor(Object.class, null);
-        machineTable.setAutoCreateRowSorter(true);
 
         JScrollPane sp = new JScrollPane(machineTable);
         sp.setSize(1000, 400);
@@ -77,6 +75,7 @@ public class ManagerMainPanel {
     }
 
     public void show() {
+        JLabel idLabel = new JLabel("1");
         machineTable.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -85,10 +84,14 @@ public class ManagerMainPanel {
                 if (row >= 0 && col >= 0) {
                     int id = Integer.parseInt(getRowAt(row)[0]);
                     VendingMachine machine = machines.getVendingMachineById(id);
+                    idLabel.setText("" + machine.id);
+                    tableData = new String[][]{{"col", "col", "col", "col"}};
+                    DefaultTableModel dm = (DefaultTableModel) machineTable.getModel();
+                    dm.fireTableDataChanged();
                 }
             }
         });
-        JLabel idLabel = new JLabel("1");
+
         vendingMachinePanel.add(idLabel);
     }
 }

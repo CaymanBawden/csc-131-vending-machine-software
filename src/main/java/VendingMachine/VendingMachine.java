@@ -5,7 +5,6 @@ import InventoryManager.Item;
 import utils.Location;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class VendingMachine {
     public int id;
@@ -108,17 +107,17 @@ public class VendingMachine {
         vendingMachineString = vendingMachineString + inventory.toString();
 
         String queuedString = "Queued Items:\n";
-        for(QueuedItem item : queuedItems){
-            queuedString = queuedString + String.format("%d%s: %s. Reason: %s",item.row+1, alphabet.indexOf(item.col), item.name, item.reason);
+        for (QueuedItem item : queuedItems) {
+            queuedString = queuedString + String.format("%d%s: %s. Reason: %s", item.row + 1, alphabet.indexOf(item.col), item.name, item.reason);
         }
         vendingMachineString = vendingMachineString + queuedString;
 
         String purchasedString = "Purchased Items:\n";
-        for(int i=0; i<purchasedItems.length; i++){
-            if(purchasedItems[i] == null)
+        for (int i = 0; i < purchasedItems.length; i++) {
+            if (purchasedItems[i] == null)
                 break;
             Item item = purchasedItems[i];
-            purchasedString = purchasedString + String.format("%d%s: %s. Purchase Date: %s",item.row+1, alphabet.charAt(item.col), item.name, item.purchasedDate);
+            purchasedString = purchasedString + String.format("%d%s: %s. Purchase Date: %s", item.row + 1, alphabet.charAt(item.col), item.name, item.purchasedDate);
         }
         vendingMachineString = vendingMachineString + purchasedString;
 

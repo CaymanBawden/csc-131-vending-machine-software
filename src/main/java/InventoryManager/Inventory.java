@@ -24,6 +24,7 @@ public class Inventory {
         return prices.get(row + "" + col);
     }
 
+    // don't test this
     public boolean addPrice(int row, int col, Double price) {
         String key = row + "" + col;
 
@@ -97,6 +98,7 @@ public class Inventory {
         return inventory[row][col][slot];
     }
 
+    // don't test
     public Item removeFrontItem(int row, int col) {
         Item item = inventory[row][col][0];
         inventory[row][col][0] = null;
@@ -104,7 +106,7 @@ public class Inventory {
         return item;
     }
 
-    //Shifts items down after change of inventory
+    // Shifts items down after change of inventory
     private void shiftItemsDown(int row, int col) {
         int cursor = 1;
         for (int i = 0; i < slots - 1; i++) {
@@ -136,17 +138,17 @@ public class Inventory {
         double itemPrice;
         String inventoryString = "Inventory:\n";
 
-        for(int i=0; i<rows; i++){
-            for(int j=0; j<cols; j++){
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
                 int stock = 0;
-                for(int k = 0; k<slots && inventory[i][j][k] != null; k++)
+                for (int k = 0; k < slots && inventory[i][j][k] != null; k++)
                     stock = stock + 1;
                 int itemRow = i + 1;
                 char itemCol = alphabet.charAt(j);
-                if(inventory[i][j][0] == null) {
-                    itemName ="No Item";
+                if (inventory[i][j][0] == null) {
+                    itemName = "No Item";
                     itemPrice = 0.00;
-                }else {
+                } else {
                     itemName = inventory[i][j][0].name;
                     itemPrice = prices.get(i + "" + j);
                 }
