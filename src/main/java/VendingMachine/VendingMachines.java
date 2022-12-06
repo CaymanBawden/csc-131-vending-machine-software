@@ -1,29 +1,44 @@
 package VendingMachine;
 
-import utils.FileRead;
-
+import java.io.*;
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class VendingMachines {
     public ArrayList<VendingMachine> vendingMachines = new ArrayList<>();
 
     public VendingMachines(String filepath) {
         ArrayList<String> lines = new ArrayList<>();
-        FileRead fr = new FileRead(filepath);
-        // used so every line is looped through
-        int numLines = fr.getNumLines();
-
-        // populate lines with all lines in the csv file
-        for (int i = 1; i < numLines; i++)
-            lines.add(fr.getLine(i).trim());
+        try {
+            FileReader inFile = new FileReader(filepath);
+            BufferedReader inStream = new BufferedReader(inFile);
+            String line;
+            inStream.readLine();
+            while ((line = inStream.readLine()) != null) {
+                lines.add(line);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+//        FileRead fr = new FileRead(filepath);
+//        int numLines = fr.getNumLines();
+//
+//        for (int i = 1; i < numLines; i++)
+//            lines.add(fr.getLine(i).trim());
 
         for (String line : lines)
             vendingMachines.add(new VendingMachine(line));
     }
 
     public void saveData() {
-        System.out.println("Saving Data");
+        try (FileWriter fileWriter = new FileWriter("data/data.csv", false)) {
+            fileWriter.write("id,location,inventory,prices,queuedItems,purchaseHistory\n");
+            for (VendingMachine machine : vendingMachines) {
+                fileWriter.write(machine + "\n");
+            }
+        } catch (IOException ioException) {
+            System.out.println("Could not open file");
+            System.exit(1);
+        }
     }
 
     public VendingMachine getVendingMachineById(int id) {
@@ -32,41 +47,5 @@ public class VendingMachines {
                 return vendingMachines.get(i);
         }
         return null;
-    }
-
-    public ArrayList<VendingMachine> getVendingMachinesByZipCode(String zipCode) {
-        ArrayList<VendingMachine> zipCodeMachines = new ArrayList<>();
-        for (VendingMachine machine : vendingMachines) {
-            if (machine.location.zipCode == zipCode)
-                zipCodeMachines.add(machine);
-        }
-        return zipCodeMachines;
-    }
-
-    public ArrayList<VendingMachine> getVendingMachinesByAddress(String address) {
-        ArrayList<VendingMachine> addressMachines = new ArrayList<>();
-        for (VendingMachine machine : vendingMachines) {
-            if (Objects.equals(machine.location.address, address))
-                addressMachines.add(machine);
-        }
-        return addressMachines;
-    }
-
-    public ArrayList<VendingMachine> getVendingMachinesByCity(String city) {
-        ArrayList<VendingMachine> cityMachines = new ArrayList<>();
-        for (VendingMachine machine : vendingMachines) {
-            if (Objects.equals(machine.location.city, city))
-                cityMachines.add(machine);
-        }
-        return cityMachines;
-    }
-
-    public ArrayList<VendingMachine> getVendingMachinesByState(String state) {
-        ArrayList<VendingMachine> stateMachines = new ArrayList<>();
-        for (VendingMachine machine : vendingMachines) {
-            if (Objects.equals(machine.location.state, state))
-                stateMachines.add(machine);
-        }
-        return stateMachines;
     }
 }

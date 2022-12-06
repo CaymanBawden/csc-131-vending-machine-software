@@ -1,0 +1,197 @@
+package VendingMachine;
+
+import java.util.ArrayList;
+
+public class VendingMachine {
+    public int id;
+    public Location location;
+    public static final int rows = 8;
+    public static final int cols = 5;
+    public static final int slots = 15;
+    public Inventory inventory = new Inventory(rows, cols, slots);
+    public ArrayList<QueuedItem> queuedItems = new ArrayList<>();
+    public Item[] purchaseHistory = new Item[10000];
+    public String alphabet = "ABCDE";
+    public Boolean online;
+
+    public VendingMachine(String data) {
+        online = true;
+        int numColumns = 6;
+        String[] csvData = new String[numColumns];
+        String[] csvDataUneven = data.split(",");
+
+        System.arraycopy(csvDataUneven, 0, csvData, 0, csvDataUneven.length);
+
+        id = Integer.parseInt(csvData[0]);
+        location = new Location(csvData[1]);
+
+        String[] inventoryStrings = csvData[2].split(";");
+        String[] pricesString = csvData[3].split(";");
+        String[] queuedItemsStrings = csvData[4] != null && csvData[4] != "" ? csvData[4].split(";") : null;
+        String[] purchaseHistoryStrings = csvData[5] != null && csvData[5] != "" ? csvData[5].split(";") : null;
+
+        for (String price : pricesString) {
+            String[] priceData = price.split(":");
+            String[] rowColData = priceData[0].split("");
+            int row = Integer.parseInt(rowColData[0]) - 1;
+            int col = alphabet.indexOf(rowColData[1]);
+            inventory.addPrice(row, col, Double.parseDouble(priceData[1]));
+        }
+
+        for (String itemString : inventoryStrings) {
+            // split string into array for access
+            String[] items = itemString.split(":");
+            String[] inventoryIndex = items[0].split("");
+
+            int row = Integer.parseInt(inventoryIndex[0]) - 1;
+            int col = alphabet.indexOf(inventoryIndex[1]);
+            int slot = Integer.parseInt(inventoryIndex[2]) - 1;
+
+            Item item = new Item(items[1], items[2], row, col);
+            item.setSlot(slot);
+
+            inventory.addItem(item);
+        }
+
+        if (queuedItemsStrings != null)
+            for (String queuedItemString : queuedItemsStrings) {
+                String[] queuedItemData = queuedItemString.split(":");
+                String[] rowColData = queuedItemData[0].split("");
+                int row = Integer.parseInt(rowColData[0]) - 1;
+                int col = alphabet.indexOf(rowColData[1]);
+                int slot = Integer.parseInt(rowColData[2]) - 1;
+                String name = queuedItemData[1];
+                String reason = queuedItemData[2];
+                String type = queuedItemData[3];
+                String date = queuedItemData[4];
+                double price = Double.parseDouble(queuedItemData[5]);
+                Item newItem = new Item(name, date, row, col);
+                newItem.setPrice(price);
+                newItem.setSlot(slot);
+                QueuedItem queuedItem = new QueuedItem(newItem, reason, type);
+                queuedItems.add(queuedItem);
+            }
+
+        if (purchaseHistoryStrings != null)
+            for (String purchaseHistoryString : purchaseHistoryStrings) {
+                String[] purchasedItem = purchaseHistoryString.split("\\*");
+                String[] rowColData = purchasedItem[0].split("");
+                int row = Integer.parseInt(rowColData[0]) - 1;
+                int col = alphabet.indexOf(rowColData[1]);
+                String name = purchasedItem[1];
+                String date = purchasedItem[2];
+                double price = Double.parseDouble(purchasedItem[3]);
+                String purchasedDate = purchasedItem[4];
+                Item purchase = new Item(name, date, row, col);
+                purchase.setPurchasedDate(purchasedDate);
+                purchase.setPrice(price);
+                addPurchasedItem(purchase);
+            }
+    }
+
+    // all print functions are only for debugging
+    public void print() {
+        location.print();
+    }
+
+    public void printQueuedItems() {
+        for (QueuedItem item : queuedItems)
+            item.print();
+    }
+
+    public void addQueuedItem(QueuedItem queuedItem) {
+        queuedItems.add(queuedItem);
+    }
+
+    public int getNumberOfQueuedItemsInRowAndCol(int row, int col) {
+        int count = 0;
+
+        for (QueuedItem item : queuedItems)
+            if (item.row == row && item.col == col)
+                count++;
+
+        return count;
+    }
+
+    public QueuedItem getQueuedItem(int row, int col, int slot) {
+        for (QueuedItem item : queuedItems)
+            if (row == item.row && col == item.col && slot == item.slot)
+                return item;
+        return null;
+    }
+
+    // Optional Todos
+    // make item.toString() method
+    // make a QueuedItems class
+    // make a PurchaseHistory class
+
+    // TODO remove queued item by row, col, and slot
+
+//    public void removeQueuedItem(QueuedItem queuedItem) {
+//        queuedItems.remove(queuedItem);
+//    }
+//
+//    public void removeQueuedItemByIndex(int i) {
+//        queuedItems.remove(i);
+//    }
+
+    public String purchaseItem(int row, int col, double price) {
+        Item removedItem = inventory.removeFrontItem(row, col);
+        if (removedItem == null)
+            return "Could not remove item";
+
+        String successMsg = "Check below for item";
+        double itemPrice = inventory.getPrice(row, col);
+
+        if (itemPrice < price)
+            successMsg = "Dispensing item below and change of: $" + (price - itemPrice);
+
+        if (itemPrice > price)
+            return "Please insert: $" + (itemPrice - price) + " more";
+
+        removedItem.setPurchasedDate();
+        addPurchasedItem(removedItem);
+
+        return successMsg;
+    }
+
+    private void addPurchasedItem(Item item) {
+        purchaseHistory[purchaseHistory.length - 1] = null;
+        for (int i = purchaseHistory.length - 2; i >= 0; i--) {
+            purchaseHistory[i + 1] = purchaseHistory[i];
+        }
+
+        purchaseHistory[0] = item;
+    }
+
+    // Removes and returns an item in a row and column
+    public String toString() {
+        String vendingMachineString = String.format("%d,%s;%s;%s;%s,", id, location.address, location.city, location.state, location.zipCode);
+        vendingMachineString += inventory.toString();
+
+        String queuedString = ",";
+        for (QueuedItem item : queuedItems) {
+            if (queuedString == ",")
+                queuedString += item.toString();
+            else
+                queuedString += ";" + item;
+        }
+        vendingMachineString += queuedString;
+
+        String purchasedString = ",";
+        for (int i = 0; i < purchaseHistory.length; i++) {
+            if (purchaseHistory[i] == null)
+                break;
+            Item item = purchaseHistory[i];
+            String itemString = String.format("%d%s*%s*%s*%s*%s", item.row + 1, alphabet.charAt(item.col), item.name, item.prettyDate, inventory.getPrice(item.row, item.col), item.purchasedDate);
+            if (purchasedString.equals(","))
+                purchasedString += itemString;
+            else
+                purchasedString += ";" + itemString;
+        }
+        vendingMachineString = vendingMachineString + purchasedString;
+
+        return vendingMachineString;
+    }
+
+}

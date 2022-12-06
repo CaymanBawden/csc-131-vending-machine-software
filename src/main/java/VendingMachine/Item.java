@@ -1,4 +1,4 @@
-package InventoryManager;
+package VendingMachine;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -8,6 +8,7 @@ public class Item {
     public String name;
     public int expiration;
     public int row, col, slot;
+    public double price;
     public String prettyDate;
     public String purchasedDate;
 
@@ -21,15 +22,25 @@ public class Item {
 
     public void setPurchasedDate() {
         Date date = Calendar.getInstance().getTime();
-        String formattedDate = new SimpleDateFormat("yyyy/MM/dd:hh:mmaa").format(date);
-        purchasedDate = formattedDate;
+        purchasedDate = new SimpleDateFormat("yyyy/MM/dd hh:mmaa").format(date);
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public void setPurchasedDate(String date) {
+        purchasedDate = date;
     }
 
     public void setSlot(int slot) {
         this.slot = slot;
     }
 
-    public String toString() {return String.format("%d %d %d: %s, %s", row, col, slot, name, prettyDate);}
+    public String toString() {
+        // format 1A1:Name:PrettyDate
+        return String.format("%d %d %d: %s, %s", row, col, slot, name, prettyDate);
+    }
 
     public void print() {
         System.out.printf(
