@@ -6,6 +6,9 @@ import VendingMachine.VendingMachine;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Objects;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -25,7 +28,16 @@ public class CustomerMainPanel {
 
     public CustomerMainPanel() {
         machines = new VendingMachines("data/data.csv");
-        machine = machines.getVendingMachineById(2);
+        int id;
+        try {
+            FileReader infile = new FileReader("data/id.txt");
+            BufferedReader instream = new BufferedReader(infile);
+            id = Integer.parseInt(instream.readLine());
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        machine = machines.getVendingMachineById(id);
         prepareGUI();
     }
 

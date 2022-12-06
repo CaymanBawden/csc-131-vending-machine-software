@@ -7,6 +7,9 @@ import VendingMachine.Item;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -32,7 +35,15 @@ public class RestockerMainPanel {
 
     public RestockerMainPanel() {
         machines = new VendingMachines("data/data.csv");
-        currentVendingMachine = machines.getVendingMachineById(2);
+        int id;
+        try {
+            FileReader infile = new FileReader("data/id.txt");
+            BufferedReader instream = new BufferedReader(infile);
+            id = Integer.parseInt(instream.readLine());
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+        currentVendingMachine = machines.getVendingMachineById(id);
 
         int totalItems = 0;
 
