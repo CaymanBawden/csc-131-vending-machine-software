@@ -114,23 +114,11 @@ public class Inventory {
         return item;
     }
 
-//    private void compactItems(int row, int col) {
-//        ArrayList<Item> compactItems = new ArrayList<>();
-//        for (int i = 0; i < inventory[row][col].length; i++) {
-//            if (inventory[row][col][i] != null)
-//                compactItems.add(inventory[row][col][i]);
-//        }
-//
-//        for (int i = 0; i < compactItems.size(); i++) {
-//            Item item = compactItems.get(i);
-//            item.setSlot(i);
-//        }
-//
-//        inventory[row][col] = (Item) compactItems.toArray();
-//    }
-
     public void remove(int row, int col, int slot) {
-        System.out.println(String.format("%s %s %s", row, col, slot));
+        inventory[row][col][slot] = null;
+    }
+
+    public void removeAndShift(int row, int col, int slot) {
         inventory[row][col][slot] = null;
         shiftItemsDown(row, col);
     }

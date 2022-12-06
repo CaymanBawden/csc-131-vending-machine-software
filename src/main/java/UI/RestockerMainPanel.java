@@ -1,4 +1,4 @@
-package UI.RestockerInterface;
+package UI;
 
 import VendingMachine.VendingMachines;
 import VendingMachine.VendingMachine;
@@ -7,13 +7,11 @@ import VendingMachine.Item;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Objects;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
@@ -34,7 +32,7 @@ public class RestockerMainPanel {
 
     public RestockerMainPanel() {
         machines = new VendingMachines("data/data.csv");
-        currentVendingMachine = machines.getVendingMachineById(1);
+        currentVendingMachine = machines.getVendingMachineById(2);
 
         int totalItems = 0;
 
@@ -222,13 +220,15 @@ public class RestockerMainPanel {
             String command = e.getActionCommand();
 
             if (command.equals("resolve") && currentItem != null) {
-                currentVendingMachine.inventory.remove(currentItem.row, currentItem.col, currentItem.slot);
+                // remove expired item
+                currentVendingMachine.inventory.removeAndShift(currentItem.row, currentItem.col, currentItem.slot);
                 currentItem = null;
                 itemDescription.setText("Selected Item: None");
                 updateItemActionTable();
             }
             if (command.equals("resolve") && currentQueuedItem != null) {
                 SimpleDateFormat inputDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+                // add queued item
                 if (currentQueuedItem.type.equals("Add")) {
                     String expiration = itemAddExpiration.getText();
                     try {
@@ -257,6 +257,7 @@ public class RestockerMainPanel {
                     itemDescription.setText("Selected Item: None");
                     errorMessage.setText("");
                 }
+                // remove queued item
                 if (currentQueuedItem.type.equals("Remove")) {
                     currentVendingMachine.inventory.remove(currentQueuedItem.row, currentQueuedItem.col, currentQueuedItem.slot);
                     currentVendingMachine.queuedItems.remove(currentQueuedItem.row, currentQueuedItem.col, currentQueuedItem.slot);

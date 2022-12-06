@@ -65,18 +65,18 @@ public class VendingMachine {
     }
 
     public String purchaseItem(int row, int col, double price) {
-        Item removedItem = inventory.removeFrontItem(row, col);
-        if (removedItem == null)
+        Item itemForRemoval = inventory.getItem(row, col, 0);
+        if (itemForRemoval == null)
             return "Could not remove item";
 
         String successMsg = "Check below for item";
         double itemPrice = inventory.getPrice(row, col);
 
-        if (itemPrice < price)
-            successMsg = "Dispensing item below and change of: $" + (price - itemPrice);
-
         if (itemPrice > price)
             return "Please insert: $" + (itemPrice - price) + " more";
+
+        successMsg = "Dispensing item below and change of: $" + (price - itemPrice);
+        Item removedItem = inventory.removeFrontItem(row, col);
 
         removedItem.setPurchasedDate();
         purchaseHistory.addPurchasedItem(removedItem);

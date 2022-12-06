@@ -1,4 +1,4 @@
-package UI.CustomerInterface;
+package UI;
 
 import VendingMachine.Item;
 import VendingMachine.VendingMachines;
@@ -25,7 +25,7 @@ public class CustomerMainPanel {
 
     public CustomerMainPanel() {
         machines = new VendingMachines("data/data.csv");
-        machine = machines.getVendingMachineById(1);
+        machine = machines.getVendingMachineById(2);
         prepareGUI();
     }
 

@@ -1,4 +1,4 @@
-package UI.ManagerInterface;
+package UI;
 
 import VendingMachine.Item;
 import VendingMachine.VendingMachines;
