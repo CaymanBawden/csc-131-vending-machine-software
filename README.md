@@ -1,24 +1,31 @@
-# csc-131-vending-machine-software
-## Main.java
-The Main.java file is where the gui and interaction with the vending machines will be put for both restockers and customers, as well as initializing all the vending machines by creating a VendingMachines object.
-For release 1 this file is only used to test the code and does not have a gui.
-To interact with a specific vending machine the command to do so is: vendingMachineData.getVendingMachineById(id) with id being a number 1, 2, ..., n
+# Vending Machine Software
 
-## VendingMachines.java
-This is where each vending machine is initialized and indexed into an Arraylist by using a file (called data.csv) which contains the id, location, inventory, and price of inventory of every Vending machine.
-The class goes through every line, each of which is the contents of an individual vending machine, and does the initializing
-the only method within the VendingMachines class is the getVendingMachineById(int id) method, which returns whichever vending machine by ID you want.
+## Installation
+1. A JRE (min version 1.9) is required (install [here](https://www.oracle.com/java/technologies/downloads/))
+2. Expand the app.zip file in the latest [release](https://github.com/CaymanBawden/csc-131-vending-machine-software/releases) in GitHub
+3. change data/id.txt to the desired vending machine.
 
-## VendingMachine.java
-The initalization of the VendingMachine class is given by the data the VendingMachines class gives it, containing that particualar machines info, and is also given the file that the information is gotten from
-The data is stored, the inventory and price is put into an array  which specifies the price, product, and if necessary the expiration date
-### It has a couple of methods:
-#### For Restockers: 
-##### addItem(), which adds an item into a specific row and column if there is an available slot left.
-##### removeSpecificItem(), which removes an item from a specific row,column, and slot.
-##### refreshData(), which refreshes the data in the vending machine file after each change made to the inventory. (Not meant to be used in this release, but there if needed
-##### checkExpirations(), which makes sure that there are no products that have expired, or are about to expire. If there are, the specific item is shown to the restocker.
-#### For Customers:
-##### removeFrontItem(), which only removes the front item of the vending machine, just like the hardware would give. This will be the only way that the customer will interact with the inventory.
-#### For debugging:
-##### printInventory(), which shows every detail about the inventory: which row, column, and slot each product is in, as well as what product, price, and expiration it has. This is for debugging the code only by the developers only.
+You are now ready to run the .exe files.
+
+## Dev Guide
+1. Install IntelliJ [here](https://www.jetbrains.com/idea/download/)
+2. Build project in IntelliJ to make .jars in out/artifacts/*.
+3. Install Launch4J [here](https://sourceforge.net/projects/launch4j/files/launch4j-3/3.50/)
+4. Open Launch4J and open app/*-config.xml.
+5. Change the .jar file location and output location to generate .exe.
+
+## Future Features
+- Add better Error Messages
+- Add SQL database to synchronize 
+- Give exact change (quarters, dimes, pennies, etc)
+- Add quantity field to the manager interface to let managers add multiple items
+- Add ability for restockers to search for items
+- Make UI prettier and able to be on a smaller screen.
+- If customer inserts less money than required, the machine will prompt for more change and wait x seconds for money to be inserted.
+- Add functionality for cancelling a purchase
+- Make vending machine time out after certain time and return to home screen.
+
+## Current Bugs
+- When a customer purchases an item with a string (eg 1A) the system parses that as a valid number
+- When a restocker resolves an item that was queued to be removed by management, all the items after that item in the inventory are also removed when the file is saved. Restockers have to remove all items to resolve bug.
+
