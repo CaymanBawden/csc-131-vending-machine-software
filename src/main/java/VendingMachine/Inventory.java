@@ -1,4 +1,4 @@
-package InventoryManager;
+package VendingMachine;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -65,6 +65,14 @@ public class Inventory {
         }
     }
 
+    public ArrayList<Item> getItems(int row, int col) {
+        ArrayList<Item> items = new ArrayList<>();
+        for (int i = 0; i < inventory[row][col].length; i++)
+            if (inventory[row][col][i] != null)
+                items.add(inventory[row][col][i]);
+        return items;
+    }
+
     // for debugging purposes only
     public void print(int limit) {
         int l = 0;
@@ -106,6 +114,27 @@ public class Inventory {
         return item;
     }
 
+//    private void compactItems(int row, int col) {
+//        ArrayList<Item> compactItems = new ArrayList<>();
+//        for (int i = 0; i < inventory[row][col].length; i++) {
+//            if (inventory[row][col][i] != null)
+//                compactItems.add(inventory[row][col][i]);
+//        }
+//
+//        for (int i = 0; i < compactItems.size(); i++) {
+//            Item item = compactItems.get(i);
+//            item.setSlot(i);
+//        }
+//
+//        inventory[row][col] = (Item) compactItems.toArray();
+//    }
+
+    public void remove(int row, int col, int slot) {
+        System.out.println(String.format("%s %s %s", row, col, slot));
+        inventory[row][col][slot] = null;
+        shiftItemsDown(row, col);
+    }
+
     // Shifts items down after change of inventory
     private void shiftItemsDown(int row, int col) {
         int cursor = 1;
@@ -123,47 +152,48 @@ public class Inventory {
         }
     }
 
-    public void removeMultItems(int[][] items) {
-        for (int i = 0; i < items.length; i++) {
-            int[] item = items[i];
-            int row = item[0];
-            int col = item[1];
-            int slot = item[2];
-            inventory[row][col][slot] = null;
-        }
-    }
-
     public String toString() {
-        String inventoryString = "";
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                for(int k = 0; k <slots; k++){
-                    if(inventory[i][j][k] == null){
+        StringBuilder inventoryString = new StringBuilder();
+        int i = 0;
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < cols; col++) {
+                for (int slot = 0; slot < slots; slot++) {
+                    if (inventory[row][col][slot] == null) {
                         break;
                     }
-                    Item item = inventory[i][j][k];
-                    String rowColSlot = String.format("%d%s%d", item.row+1, alphabet.charAt(item.col), item.slot+1);
-                    if(inventoryString == "")
-                        inventoryString = inventoryString + String.format("%s:%s:%s", rowColSlot, item.name, item.prettyDate);
+                    Item item = inventory[row][col][slot];
+                    String rowColSlot = String.format("%d%s%d", item.row + 1, alphabet.charAt(item.col), item.slot + 1);
+                    if (i == 0)
+                        inventoryString.append(String.format("%s*%s*%s", rowColSlot, item.name, item.prettyDate));
                     else
-                        inventoryString = inventoryString + String.format(";%s:%s:%s", rowColSlot, item.name, item.prettyDate);
+                        inventoryString.append(String.format("~%s*%s*%s", rowColSlot, item.name, item.prettyDate));
+                    i++;
                 }
             }
         }
 
-        String priceString = ",";
-        for(int priceRow = 0; priceRow < rows; priceRow++){
-            for(int priceCol = 0; priceCol < cols; priceCol++){
-                String rowCol = priceRow+1 + "" + alphabet.charAt(priceCol);
-                if(priceString == ",")
-                    priceString = priceString + String.format("%s:%.2f", rowCol, prices.get(priceRow + "" + priceCol));
+        StringBuilder priceString = new StringBuilder(",");
+        for (int priceRow = 0; priceRow < rows; priceRow++) {
+            for (int priceCol = 0; priceCol < cols; priceCol++) {
+                String rowCol = priceRow + 1 + "" + alphabet.charAt(priceCol);
+                if (priceCol == 0 && priceRow == 0)
+                    priceString.append(String.format("%s*%.2f", rowCol, prices.get(priceRow + "" + priceCol)));
                 else
-                    priceString = priceString + String.format(";%s:%.2f", rowCol, prices.get(priceRow + "" + priceCol));
+                    priceString.append(String.format("~%s*%.2f", rowCol, prices.get(priceRow + "" + priceCol)));
             }
         }
-        inventoryString = inventoryString + priceString;
 
-        return inventoryString;
+        inventoryString.append(priceString);
+
+        return inventoryString.toString();
+    }
+
+    public int getQuantity(int row, int col) {
+        int quantity = 0;
+        for (int slot = 0; slot < inventory[row][col].length; slot++)
+            if (inventory[row][col][slot] != null)
+                quantity++;
+        return quantity;
     }
 
     public ArrayList<Item> getExpiredItems() {

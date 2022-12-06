@@ -1,6 +1,6 @@
 package UI.CustomerInterface;
 
-import InventoryManager.Item;
+import VendingMachine.Item;
 import VendingMachine.VendingMachines;
 import VendingMachine.VendingMachine;
 
@@ -18,12 +18,14 @@ public class CustomerMainPanel {
     private JLabel statusLabel;
     private JPanel controlPanel;
     private Item selectedItem;
+    private VendingMachines machines;
     private VendingMachine machine;
     private JFormattedTextField purchaseField;
     private double currentPrice;
 
     public CustomerMainPanel() {
-        machine = new VendingMachines("data/data.csv").getVendingMachineById(1);
+        machines = new VendingMachines("data/data.csv");
+        machine = machines.getVendingMachineById(1);
         prepareGUI();
     }
 
@@ -113,8 +115,10 @@ public class CustomerMainPanel {
             if (Objects.equals(command, "purchase")) {
                 if (selectedItem == null)
                     statusLabel.setText("Cannot purchase item because none is selected");
-                else
+                else {
                     statusLabel.setText(machine.purchaseItem(selectedItem.row, selectedItem.col, currentPrice));
+                    machines.saveData();
+                }
             } else {
                 String[] commandData = command.split("");
                 int row = Integer.parseInt(commandData[0]);
